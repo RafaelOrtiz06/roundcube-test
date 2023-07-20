@@ -1,0 +1,71 @@
+version: '3.9'
+
+services:
+  # MySQL Database container for Roundcube
+  roundcube-db:
+    image: mysql:5.7
+    container_name: roundcube-db
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: roundcube
+      MYSQL_USER: roundcube
+      MYSQL_PASSWORD: password
+    volumes:
+      - roundcube-db-data:/var/lib/mysql
+
+  # Mailserver container (using Postfix and Dovecot)
+  mailserver:
+    image: analogic/poste.io
+    container_name: mailserver
+      #restart: always
+    environment:
+      #- TZ=Your_Timezone
+      - MAIL_USER_PASSWORD_SCHEME=SHA512-CRYPT
+    ports:
+      - "25:25"
+      - "143:143"
+      - "587:587"
+      - "993:993"
+      - "4190:4190"
+    volumes:
+      - mail-data:/data
+
+  # Roundcube Webmail container
+  roundcube:
+    image: roundcube/roundcubemail
+    container_name: roundcube
+    restart: always
+    ports:
+      - "8080:80"
+    depends_on:
+      - roundcube-db
+      - mailserver
+    environment:
+      MYSQL_HOST: roundcube-db
+      MYSQL_USER: roundcube
+      MYSQL_PASSWORD: your_roundcube_db_password
+      MYSQL_DATABASE: roundcube
+      ROUNDCUBE_DB_PORT: 3306
+      ROUNDCUBE_DEFAULT_HOST: mailserver
+      ROUNDCUBE_DEFAULT_PORT: 143
+      ROUNDCUBE_SMTP_SERVER: mailserver
+      ROUNDCUBE_SMTP_PORT: 587
+      ROUNDCUBE_IMAP_SERVER: mailserver
+      ROUNDCUBE_IMAP_PORT: 993
+      ROUNDCUBE_SIEVE_SERVER: mailserver
+      ROUNDCUBE_SIEVE_PORT: 4190
+      ROUNDCUBE_PLUGINS: markasjunk,managesieve
+      ROUNDCUBE_TRASH: Trash
+      ROUNDCUBE_JUNK: Junk
+      ROUNDCUBE_SENT: Sent
+      ROUNDCUBE_DRAFTS: Drafts
+    volumes:
+      - roundcube-data:/var/www/html
+
+volumes:
+  roundcube-db-data:
+  mail-data:
+  roundcube-data:
+
