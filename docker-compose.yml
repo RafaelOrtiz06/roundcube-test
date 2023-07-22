@@ -11,7 +11,7 @@ services:
       MYSQL_ROOT_PASSWORD: password
       MYSQL_DATABASE: roundcube
       MYSQL_USER: roundcube
-      MYSQL_PASSWORD: your_roundcube_db_password
+      MYSQL_PASSWORD: password
     volumes:
       - roundcube-db-data:/var/lib/mysql
 
@@ -23,7 +23,6 @@ services:
     environment:
       - TZ=Your_Timezone
       - MAIL_USER_PASSWORD_SCHEME=SHA512-CRYPT
-    entrypoint: ["/bin/sh", "-c", "echo 'user@example.com:user_password:1001:1001::/data/mail/vhosts/example.com/user:::' >> /data/mail/users; /bin/bash /start.sh"]
     ports:
       - "25:25"
       - "143:143"
@@ -46,7 +45,7 @@ services:
     environment:
       MYSQL_HOST: roundcube-db
       MYSQL_USER: roundcube
-      MYSQL_PASSWORD: your_roundcube_db_password
+      MYSQL_PASSWORD: password
       MYSQL_DATABASE: roundcube
       ROUNDCUBE_DB_PORT: 3306
       ROUNDCUBE_DEFAULT_HOST: mailserver
