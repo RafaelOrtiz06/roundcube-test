@@ -27,8 +27,8 @@ services:
       - "8080:80"
     depends_on:
       - db
-      volumes:
-        - ./custom_roundcube/:/var/www/html/
+    volumes:
+      - ./custom_roundcube/:/var/www/html/
     environment:
       - ROUNDCUBEMAIL_DEFAULT_HOST=posteio
       - ROUNDCUBEMAIL_DEFAULT_PORT=143
