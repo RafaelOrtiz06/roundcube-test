@@ -12,6 +12,8 @@ services:
       - "4190:4190"
     volumes:
       - ./posteio/data:/data
+      - ./dovecot.conf:/etc/dovecot/conf.d/99-custom-config.conf
+
     environment:
       - "TZ=America/New_York" # Set your timezone (e.g., "America/New_York")
 
