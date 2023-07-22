@@ -27,10 +27,8 @@ services:
       - "8080:80"
     depends_on:
       - db
-        #volumes:
-      #- ./config/:/var/www/html/config/
-      #- ./logs/:/var/www/html/logs/  # Add this line to mount the logs directory
-        #- ./custom_roundcube:/var/www/html
+      volumes:
+        - ./custom_roundcube/:/var/www/html/
     environment:
       - ROUNDCUBEMAIL_DEFAULT_HOST=posteio
       - ROUNDCUBEMAIL_DEFAULT_PORT=143
@@ -43,9 +41,6 @@ services:
       - ROUNDCUBEMAIL_DB_USER=root
       - ROUNDCUBEMAIL_DB_PASSWORD=mysecretpassword
       - ROUNDCUBEMAIL_DB_NAME=roundcube
-        #- PHP_MEMORY_LIMIT=256M  # Set the memory limit as required, e.g., 256MB
-
-
 
 
   # Roundcube webmail client
@@ -58,9 +53,6 @@ services:
       - db
     volumes:
       - ./roundcube-data:/var/www/html
-      - ./roundcube/config:/var/www/html/config
-      - ./roundcube/logs:/var/www/html/logs
-      - ./roundcube/temp:/var/www/html/temp
     environment:
       - ROUNDCUBEMAIL_DEFAULT_HOST=posteio
       - ROUNDCUBEMAIL_DEFAULT_PORT=143
