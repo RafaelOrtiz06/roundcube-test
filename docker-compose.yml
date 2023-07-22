@@ -17,6 +17,37 @@ services:
     environment:
       - "TZ=America/New_York" # Set your timezone (e.g., "America/New_York")
 
+
+  # Custom Roundcube webmail client
+  custom_roundcube:
+    build:
+        context: ./custom_roundcube
+    container_name: custom_roundcube
+    ports:
+      - "8080:80"
+    depends_on:
+      - db
+        #volumes:
+      #- ./config/:/var/www/html/config/
+      #- ./logs/:/var/www/html/logs/  # Add this line to mount the logs directory
+        #- ./custom_roundcube:/var/www/html
+    environment:
+      - ROUNDCUBEMAIL_DEFAULT_HOST=posteio
+      - ROUNDCUBEMAIL_DEFAULT_PORT=143
+      - ROUNDCUBEMAIL_SMTP_SERVER=posteio
+      - ROUNDCUBEMAIL_SMTP_PORT=587
+      - ROUNDCUBEMAIL_IMAP_AUTH_TYPE=LOGIN
+      - ROUNDCUBEMAIL_DB_TYPE=mysql
+      - ROUNDCUBEMAIL_DB_HOST=db
+      - ROUNDCUBEMAIL_DB_PORT=3306
+      - ROUNDCUBEMAIL_DB_USER=root
+      - ROUNDCUBEMAIL_DB_PASSWORD=mysecretpassword
+      - ROUNDCUBEMAIL_DB_NAME=roundcube
+        #- PHP_MEMORY_LIMIT=256M  # Set the memory limit as required, e.g., 256MB
+
+
+
+
   # Roundcube webmail client
   roundcube:
     image: roundcube/roundcubemail:latest
