@@ -1,28 +1,9 @@
-version: '3.9'
-
+version: '3.8'
 services:
-  # MySQL Database container for Roundcube
-  roundcube-db:
-    image: mysql:5.7
-    container_name: roundcube-db
-    command: --default-authentication-plugin=mysql_native_password
-    restart: always
-    environment:
-      MYSQL_ROOT_PASSWORD: password
-      MYSQL_DATABASE: roundcube
-      MYSQL_USER: roundcube
-      MYSQL_PASSWORD: password
-    volumes:
-      - roundcube-db-data:/var/lib/mysql
-
-  # Mailserver container (using Postfix and Dovecot)
-  mailserver:
-    image: analogic/poste.io
-    container_name: mailserver
-    restart: always
-    environment:
-      - TZ=Your_Timezone
-      - MAIL_USER_PASSWORD_SCHEME=SHA512-CRYPT
+  # Poste.io IMAP server (same as before)
+  posteio:
+    image: analogic/poste.io:latest
+    container_name: posteio
     ports:
       - "25:25"
       - "143:143"
@@ -30,42 +11,43 @@ services:
       - "993:993"
       - "4190:4190"
     volumes:
-      - mail-data:/data
-
-  # Roundcube Webmail container
-  roundcube:
-    image: roundcube/roundcubemail
-    container_name: roundcube
-    restart: always
-    ports:
-      - "8080:80"
-    depends_on:
-      - roundcube-db
-      - mailserver
+      - ./posteio/data:/data
     environment:
-      MYSQL_HOST: roundcube-db
-      MYSQL_USER: roundcube
-      MYSQL_PASSWORD: password
-      MYSQL_DATABASE: roundcube
-      ROUNDCUBE_DB_PORT: 3306
-      ROUNDCUBE_DEFAULT_HOST: mailserver
-      ROUNDCUBE_DEFAULT_PORT: 143
-      ROUNDCUBE_SMTP_SERVER: mailserver
-      ROUNDCUBE_SMTP_PORT: 587
-      ROUNDCUBE_IMAP_SERVER: mailserver
-      ROUNDCUBE_IMAP_PORT: 993
-      ROUNDCUBE_SIEVE_SERVER: mailserver
-      ROUNDCUBE_SIEVE_PORT: 4190
-      ROUNDCUBE_PLUGINS: markasjunk,managesieve
-      ROUNDCUBE_TRASH: Trash
-      ROUNDCUBE_JUNK: Junk
-      ROUNDCUBE_SENT: Sent
-      ROUNDCUBE_DRAFTS: Drafts
-    volumes:
-      - roundcube-data:/var/www/html
+      - "TZ=America/New_York" # Set your timezone (e.g., "America/New_York")
 
-volumes:
-  roundcube-db-data:
-  mail-data:
-  roundcube-data:
+  # Roundcube webmail client
+  roundcube:
+    image: roundcube/roundcubemail:latest
+    container_name: roundcube
+    ports:
+      - "80:80"
+    depends_on:
+      - db
+    volumes:
+      - ./roundcube/config:/var/www/html/config
+      - ./roundcube/logs:/var/www/html/logs
+      - ./roundcube/temp:/var/www/html/temp
+    environment:
+      - ROUNDCUBEMAIL_DEFAULT_HOST=posteio
+      - ROUNDCUBEMAIL_DEFAULT_PORT=143
+      - ROUNDCUBEMAIL_SMTP_SERVER=posteio
+      - ROUNDCUBEMAIL_SMTP_PORT=587
+      - ROUNDCUBEMAIL_IMAP_AUTH_TYPE=LOGIN
+      - ROUNDCUBEMAIL_DB_TYPE=mysql
+      - ROUNDCUBEMAIL_DB_HOST=db
+      - ROUNDCUBEMAIL_DB_PORT=3306
+      - ROUNDCUBEMAIL_DB_USER=root
+      - ROUNDCUBEMAIL_DB_PASSWORD=mysecretpassword
+      - ROUNDCUBEMAIL_DB_NAME=roundcube
+
+  # MySQL database
+  db:
+    image: mysql:latest
+    container_name: roundcube_db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: mysecretpassword
+      MYSQL_DATABASE: roundcube
+    volumes:
+      - ./mysql_data:/var/lib/mysql
 
