@@ -57,6 +57,7 @@ services:
     depends_on:
       - db
     volumes:
+      - ./roundcube-data:/var/www/html
       - ./roundcube/config:/var/www/html/config
       - ./roundcube/logs:/var/www/html/logs
       - ./roundcube/temp:/var/www/html/temp
