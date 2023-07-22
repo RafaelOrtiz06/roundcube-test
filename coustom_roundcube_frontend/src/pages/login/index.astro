@@ -1,0 +1,23 @@
+---
+import "./login.scss";
+import { Image } from "astro:assets";
+
+//import roundcubeLogo from "src/assets/images/logo.svg";
+
+import Layout from "../../layouts/Layout.astro";
+import Input from "../../components/input/Input.astro";
+import Button from "../../components/button/Button.astro";
+---
+
+<Layout title="Login">
+  <!-- <Image src={roundcubeLogo} alt="A description of my image." /> -->
+
+  <section class="login-container">
+    <form class="login-form">
+      <Input type="text" placeholder="Username" />
+      <Input type="password" placeholder="Password" />
+
+      <Button text="LOGIN" />
+    </form>
+  </section>
+</Layout>

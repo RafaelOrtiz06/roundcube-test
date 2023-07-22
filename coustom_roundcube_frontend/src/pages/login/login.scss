@@ -1,0 +1,12 @@
+@use "../../styles/abstracts";
+
+.login {
+  &-container {
+    @include abstracts.flexbox(column, center, center, 1rem);
+    height: 100dvh;
+  }
+  &-form {
+    @include abstracts.flexbox(column, center, center, 1rem);
+    display: flex;
+  }
+}

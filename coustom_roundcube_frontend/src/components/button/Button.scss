@@ -1,0 +1,11 @@
+@use "../../styles/abstracts";
+
+.btn {
+  @include abstracts.rounded();
+  border: 0;
+  background-color: abstracts.$primary;
+  color: abstracts.$white;
+  font-size: 1.2rem;
+  height: 2rem;
+  width: 15rem;
+}

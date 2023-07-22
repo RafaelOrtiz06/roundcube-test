@@ -1,0 +1,13 @@
+---
+import "./Input.scss";
+
+interface Props {
+  type?: any;
+  name?: string;
+  placeholder?: string;
+}
+
+const { type, name, placeholder } = Astro.props;
+---
+
+<input class="input" type={type} name={name} placeholder={placeholder} />
