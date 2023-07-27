@@ -18,37 +18,36 @@ services:
       - "TZ=America/New_York" # Set your timezone (e.g., "America/New_York")
 
 
-  # Custom Roundcube webmail client
-  custom_roundcube:
-    build:
-        context: ./custom_roundcube
-    container_name: custom_roundcube
-    ports:
-      - "8080:80"
-    depends_on:
-      - db
-    volumes:
-      - ./custom_roundcube/:/var/www/html/
-    environment:
-      - ROUNDCUBEMAIL_DEFAULT_HOST=posteio
-      - ROUNDCUBEMAIL_DEFAULT_PORT=143
-      - ROUNDCUBEMAIL_SMTP_SERVER=posteio
-      - ROUNDCUBEMAIL_SMTP_PORT=587
-      - ROUNDCUBEMAIL_IMAP_AUTH_TYPE=LOGIN
-      - ROUNDCUBEMAIL_DB_TYPE=mysql
-      - ROUNDCUBEMAIL_DB_HOST=db
-      - ROUNDCUBEMAIL_DB_PORT=3306
-      - ROUNDCUBEMAIL_DB_USER=root
-      - ROUNDCUBEMAIL_DB_PASSWORD=mysecretpassword
-      - ROUNDCUBEMAIL_DB_NAME=roundcube
+  # # Custom Roundcube webmail client
+  # custom_roundcube:
+  #   build:
+  #       context: ./custom_roundcube
+  #   container_name: custom_roundcube
+  #   ports:
+  #     - "8080:80"
+  #   depends_on:
+  #     - db
+  #   volumes:
+  #     - ./custom_roundcube/:/var/www/html/
+  #   environment:
+  #     - ROUNDCUBEMAIL_DEFAULT_HOST=posteio
+  #     - ROUNDCUBEMAIL_DEFAULT_PORT=143
+  #     - ROUNDCUBEMAIL_SMTP_SERVER=posteio
+  #     - ROUNDCUBEMAIL_SMTP_PORT=587
+  #     - ROUNDCUBEMAIL_IMAP_AUTH_TYPE=LOGIN
+  #     - ROUNDCUBEMAIL_DB_TYPE=pgsql  # Change the database type to PostgreSQL
+  #     - ROUNDCUBEMAIL_DB_HOST=db  # Use the service name as the hostname
+  #     - ROUNDCUBEMAIL_DB_PORT=5432  # PostgreSQL port is 5432
+  #     - ROUNDCUBEMAIL_DB_USER=roundcube  # Create a new user for Roundcube
+  #     - ROUNDCUBEMAIL_DB_PASSWORD=roundcube  # Set your preferred password
+  #     - ROUNDCUBEMAIL_DB_NAME=roundcube_db  #
 
-
-  # Roundcube webmail client
+      # Roundcube webmail client
   roundcube:
     image: roundcube/roundcubemail:latest
     container_name: roundcube
     ports:
-      - "80:80"
+      - "8080:80"
     depends_on:
       - db
     volumes:
@@ -59,21 +58,23 @@ services:
       - ROUNDCUBEMAIL_SMTP_SERVER=posteio
       - ROUNDCUBEMAIL_SMTP_PORT=587
       - ROUNDCUBEMAIL_IMAP_AUTH_TYPE=LOGIN
-      - ROUNDCUBEMAIL_DB_TYPE=mysql
-      - ROUNDCUBEMAIL_DB_HOST=db
-      - ROUNDCUBEMAIL_DB_PORT=3306
-      - ROUNDCUBEMAIL_DB_USER=root
-      - ROUNDCUBEMAIL_DB_PASSWORD=mysecretpassword
-      - ROUNDCUBEMAIL_DB_NAME=roundcube
+      - ROUNDCUBEMAIL_DB_TYPE=pgsql  # Change the database type to PostgreSQL
+      - ROUNDCUBEMAIL_DB_HOST=db  # Use the service name as the hostname
+      - ROUNDCUBEMAIL_DB_PORT=5432  # PostgreSQL port is 5432
+      - ROUNDCUBEMAIL_DB_USER=roundcube  # Create a new user for Roundcube
+      - ROUNDCUBEMAIL_DB_PASSWORD=roundcube  # Set your preferred password
+      - ROUNDCUBEMAIL_DB_NAME=roundcube_db  #
 
-  # MySQL database
+ # PostgreSQL database
   db:
-    image: mysql:latest
+    image: postgres:latest
     container_name: roundcube_db
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: mysecretpassword
-      MYSQL_DATABASE: roundcube
+      POSTGRES_USER: roundcube  # This should match the ROUNDCUBEMAIL_DB_USER above
+      POSTGRES_PASSWORD: roundcube  # This should match the ROUNDCUBEMAIL_DB_PASSWORD above
+      POSTGRES_DB: roundcube_db  # This should match the ROUNDCUBEMAIL_DB_NAME above
     volumes:
-      - ./mysql_data:/var/lib/mysql
+      - ./postgres_data:/var/lib/postgresql/data
+
 
